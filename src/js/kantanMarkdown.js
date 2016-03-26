@@ -377,7 +377,7 @@
 		}
 		
 		// リンク
-		var anchors = document.querySelectorAll("#previewer a");
+		var anchors = preBody.querySelectorAll("a");
 		for(i in anchors) {
 			var anchor = anchors[i];
 			var href = anchor.href;
