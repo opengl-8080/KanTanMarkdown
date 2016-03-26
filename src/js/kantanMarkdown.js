@@ -409,7 +409,7 @@
 		
 		// フローチャート
 		if (typeof flowchart !== "undefined") {
-			var flows = document.getElementsByClassName("flow");
+			var flows = previewerBody.getElementsByClassName("flow");
 			for (var i = 0; i < flows.length; i++) {
 				var flow = flows[i];
 				var diagram = flowchart.parse(flow.textContent);
