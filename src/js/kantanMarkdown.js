@@ -205,7 +205,7 @@
 		var editor = document.getElementById("editor");
 		var previewer = document.getElementById("previewer");
 		if (isEditMode()) {
-			editorScrollBarPos    = editor.scrollTop;
+			editorScrollBarPos = editor.scrollTop;
 			caretStartPos = editor.selectionStart;
 			caretEndPos = editor.selectionEnd;
 		}
@@ -223,26 +223,10 @@
 			document.querySelector("body").classList.remove("editMode");
 			doPreview();
 			
-			// スクロールバー位置記憶
-			var minDiff = null;
-			var minElem = null;
-			var elems = previewer.querySelectorAll("*");
-			for (var i = 0; i < elems.length; i++) {
-				var diff = previewer.scrollTop - (elems[i].offsetTop - previewer.offsetTop);
-				if ((minDiff == null) || (Math.abs(diff) < Math.abs(minDiff))) {
-					minDiff = diff;
-					minElem = elems[i];
-				}
-			}	
-			
 			// レイアウト修正
 			doLayout();
 			
 			previewer.focus();
-			
-			if (minElem) {
-				wrapper.scrollTop = (minElem.offsetTop - previewer.offsetTop) + minDiff;
-			}
 		} else {
 			// 編集モードへ
 			showBlock(attach);
@@ -251,31 +235,14 @@
 			document.querySelector("body").classList.add("editMode");
 			doPreview();
 			
-			// スクロールバー位置記憶
-			var minDiff = null;
-			var minElem = null;
-			var elems = previewer.querySelectorAll("*");
-			for (var i = 0; i < elems.length; i++) {
-				var diff = wrapper.scrollTop - (elems[i].offsetTop - previewer.offsetTop);
-				if ((minDiff == null) || (Math.abs(diff) < Math.abs(minDiff))) {
-					minDiff = diff;
-					minElem = elems[i];
-				}
-			}		
-			
 			if (isPreviewerOpened == false) {
 				closePreview();
 			}
 			
 			// レイアウト修正
 			doLayout();
-			
-			if (minElem) {
-				previewer.scrollTop = (minElem.offsetTop - previewer.offsetTop) + minDiff;
-			}
 		}
 		
-
 		if (isEditMode()) {
 			editor.scrollTop    = editorScrollBarPos;
 			editor.selectionStart = caretStartPos;
@@ -329,9 +296,6 @@
 		var event = document.createEvent("Event");
 		event.initEvent("prepreview", true, true);
 		previewer.dispatchEvent(event);
-
-		// スクロールバー下端判定
-		var scrollLockFlag = isMaxScroll("previewer");
 		
 		// Remark レンダリング
     var previewerBody = previewer.contentDocument.body;
@@ -418,11 +382,6 @@
 			}
 		}
 		
-		// スクロールバーが最下部にある場合、更新後も最下部にする。
-		if (scrollLockFlag == true) {
-			previewer.scrollTop = previewer.scrollHeight;
-		}
-		
 		// previewedイベントをディスパッチ
 		var event = document.createEvent("Event");
 		event.initEvent("previewed", true, true);
@@ -507,18 +466,6 @@
 			};
 			baseImage.src= base64;
 		}
-	}
-	
-	function isMaxScroll (id) {
-		var elem = document.getElementById(id);
-		
-		var scrollHeight = elem.scrollHeight;
-		var clientHeight = elem.clientHeight;
-		var scrollTop = elem.scrollTop;
-		var diff = scrollHeight - (clientHeight + scrollTop)
-		
-		// 小数点付きの計算なので数ピクセルの誤差を許容する
-		return (-1.0 <= diff) && (diff <= 1.0);
 	}
 	
 	/* CSSエディタ変更周り */
@@ -1077,9 +1024,6 @@
 	}
 
 	function getHTMLForSave() {
-		var wrapperScrollTop = document.getElementById("wrapper").scrollTop;
-		var previewerScrollTop = document.getElementById("previewer").scrollTop;
-		
 		// アップデート用のscriptタグを消す
 		document.querySelector("#updateScriptArea").innerHTML = "";
 		
@@ -1116,9 +1060,7 @@
 		if (toggleFlag == true) {
 			toggleMode();
 		}
-		
-		document.getElementById("previewer").scrollTop = previewerScrollTop;
-		document.getElementById("wrapper").scrollTop = wrapperScrollTop;
+    
 		return html;
 	}
 
