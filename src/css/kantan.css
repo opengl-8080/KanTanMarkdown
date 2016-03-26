@@ -89,7 +89,7 @@ nav:after {
 	box-sizing:border-box;
 	width: 100%;
 	height: calc(100% - 20px); /* #editorTabの高さと合わせる */
-	marign: 0;
+	margin: 0;
 	padding: 0;
 }
 
@@ -157,7 +157,8 @@ nav:after {
 }
 
 .previewMode #previewer {
-	height: auto;
+	height: 100%;
+  width: 100%;
 	overflow:auto;
 }
 

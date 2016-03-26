@@ -8,6 +8,12 @@
             });
         }
     })();
+  
+    (function() {
+      // Remark 用の style 領域
+		  var previewer = document.getElementById("previewer");
+      previewer.contentDocument.head.innerHTML = '<style id="remarkStyle" type="text/css"></stype>';
+    })();
     
 	/* 編集不可ブラウザ判定 */
 
@@ -304,7 +310,7 @@
 		// キューをキャンセルして再カウント 
 		previewQueue = setTimeout(doPreview, queuePreviewWait);
 	}
-	
+  
 	// 同期実行
 	function doPreview() {
 		// prepreviewedイベントをディスパッチ
@@ -317,14 +323,40 @@
 		var scrollLockFlag = isMaxScroll("previewer");
 		
 		// マークダウンレンダリング
-		previewer.innerHTML = marked(editor.value);
+    var preBody = previewer.contentDocument.body;
+    
+    while (preBody.firstChild) {
+      preBody.removeChild(preBody.firstChild);
+    }
+    previewer.contentDocument.documentElement.className = '';
+    preBody.className = '';
+    
+    (function() {
+      var previewer = document.getElementById('previewer');
+      
+      var textArea = document.createElement('textarea');
+      textArea.innerHTML = editor.value;
+      textArea.id = 'source';
+      previewer.contentDocument.body.appendChild(textArea);
+      
+      var remarkScript = document.createElement('script');
+      remarkScript.src = 'http://gnab.github.io/remark/downloads/remark-latest.min.js';
+      
+      remarkScript.onload = function() {
+        var buildRemarkScript = document.createElement('script');
+        buildRemarkScript.type = 'text/javascript';
+        buildRemarkScript.innerText = 'remark.create();';
+        previewer.contentDocument.body.appendChild(buildRemarkScript);
+      };
+      
+      previewer.contentDocument.body.appendChild(remarkScript);
+    })();
+    
 		
 		// CSS修正
-		var previewerStyle = document.querySelector("#previewerStyle");
 		var cssEditor = document.querySelector("#cssEditor");
-		previewerStyle.innerHTML = cssEditor.value;
-		
-		
+    previewer.contentDocument.querySelector('#remarkStyle').innerHTML = cssEditor.value;
+    
 		// タイトル変更
 		var h1 = document.querySelector("h1");
 		if(h1) {
@@ -1491,7 +1523,10 @@
 	});
 	
 	/* ショートカットキー */
-	on("body", "keydown", function(event) {
+	on("body", "keydown", shortcutKey);
+  //on(document.getElementById('previwer').contentDocument.body, 'keydown', shortcutKey);
+  
+  function shortcutKey(event) {
 		var code = (event.keyCode ? event.keyCode : event.which);
 		
 		if (isDrawMode()) {
@@ -1594,7 +1629,7 @@
 		}
 		
 		return true;
-	});
+	};
 	
 	function isEditMode() {
 		return document.querySelector("body").classList.contains("editMode");

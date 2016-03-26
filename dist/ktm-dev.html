@@ -98,7 +98,7 @@ nav:after {
 	box-sizing:border-box;
 	width: 100%;
 	height: calc(100% - 20px); /* #editorTabの高さと合わせる */
-	marign: 0;
+	margin: 0;
 	padding: 0;
 }
 
@@ -166,7 +166,8 @@ nav:after {
 }
 
 .previewMode #previewer {
-	height: auto;
+	height: 100%;
+  width: 100%;
 	overflow:auto;
 }
 
@@ -423,18 +424,24 @@ nav:after {
  * 標準のCSSに戻したいときはCSSを引き継がずに強制アップデートしてください
  * また、CSSの変更はプレビューしないと反映しません。
  */
- 
+
+body { font-family: 'Droid Serif'; }
+h1, h2, h3 {
+  font-family: 'Yanone Kaffeesatz';
+  font-weight: normal;
+}
+.remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+
 .previewMode #previewer {
-    width: 980px;
+    width: 100%;
+    height: 100%;
 }
 #previewer {
     word-wrap: break-word;
-    border: 1px solid gray;
     font-family: Helvetica, arial, sans-serif;
     font-size: 14px;
     line-height: 1.6;
     background-color: white;
-    padding: 45px;
 }
 #previewer > *:first-child {
     margin-top: 0 !important;
@@ -935,7 +942,8 @@ github.com style (c) Vasily Polovnyov <vast@whiteants.net>
 			<li><a href="#" id="cssTab">CSS</a></li>
 		</ol>
 	</div>
-	<div id="previewer" tabIndex="-1"></div>
+	<iframe id="previewer" tabIndex="-1">
+  </iframe>
 </div>
 <div id="onlineMenu" class="popupMenu">
 	<ul>
@@ -2065,6 +2073,12 @@ LetterModeStrategy.prototype = {
             });
         }
     })();
+  
+    (function() {
+      // Remark 用の style 領域
+		  var previewer = document.getElementById("previewer");
+      previewer.contentDocument.head.innerHTML = '<style id="remarkStyle" type="text/css"></stype>';
+    })();
     
 	/* 編集不可ブラウザ判定 */
 
@@ -2361,7 +2375,7 @@ LetterModeStrategy.prototype = {
 		// キューをキャンセルして再カウント 
 		previewQueue = setTimeout(doPreview, queuePreviewWait);
 	}
-	
+  
 	// 同期実行
 	function doPreview() {
 		// prepreviewedイベントをディスパッチ
@@ -2374,14 +2388,40 @@ LetterModeStrategy.prototype = {
 		var scrollLockFlag = isMaxScroll("previewer");
 		
 		// マークダウンレンダリング
-		previewer.innerHTML = marked(editor.value);
+    var preBody = previewer.contentDocument.body;
+    
+    while (preBody.firstChild) {
+      preBody.removeChild(preBody.firstChild);
+    }
+    previewer.contentDocument.documentElement.className = '';
+    preBody.className = '';
+    
+    (function() {
+      var previewer = document.getElementById('previewer');
+      
+      var textArea = document.createElement('textarea');
+      textArea.innerHTML = editor.value;
+      textArea.id = 'source';
+      previewer.contentDocument.body.appendChild(textArea);
+      
+      var remarkScript = document.createElement('script');
+      remarkScript.src = 'http://gnab.github.io/remark/downloads/remark-latest.min.js';
+      
+      remarkScript.onload = function() {
+        var buildRemarkScript = document.createElement('script');
+        buildRemarkScript.type = 'text/javascript';
+        buildRemarkScript.innerText = 'remark.create();';
+        previewer.contentDocument.body.appendChild(buildRemarkScript);
+      };
+      
+      previewer.contentDocument.body.appendChild(remarkScript);
+    })();
+    
 		
 		// CSS修正
-		var previewerStyle = document.querySelector("#previewerStyle");
 		var cssEditor = document.querySelector("#cssEditor");
-		previewerStyle.innerHTML = cssEditor.value;
-		
-		
+    previewer.contentDocument.querySelector('#remarkStyle').innerHTML = cssEditor.value;
+    
 		// タイトル変更
 		var h1 = document.querySelector("h1");
 		if(h1) {
@@ -3548,7 +3588,10 @@ LetterModeStrategy.prototype = {
 	});
 	
 	/* ショートカットキー */
-	on("body", "keydown", function(event) {
+	on("body", "keydown", shortcutKey);
+  //on(document.getElementById('previwer').contentDocument.body, 'keydown', shortcutKey);
+  
+  function shortcutKey(event) {
 		var code = (event.keyCode ? event.keyCode : event.which);
 		
 		if (isDrawMode()) {
@@ -3651,7 +3694,7 @@ LetterModeStrategy.prototype = {
 		}
 		
 		return true;
-	});
+	};
 	
 	function isEditMode() {
 		return document.querySelector("body").classList.contains("editMode");
