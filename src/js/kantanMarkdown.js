@@ -359,7 +359,7 @@
     previewer.contentDocument.querySelector('#remarkStyle').innerHTML = cssEditor.value;
     
 		// タイトル変更
-		var h1 = document.querySelector("h1");
+		var h1 = preBody.querySelector("h1");
 		if(h1) {
 			document.title = h1.textContent;
 		} else {
