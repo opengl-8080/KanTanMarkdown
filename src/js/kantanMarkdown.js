@@ -351,7 +351,7 @@
     
     var buildRemarkScript = document.createElement('script');
     buildRemarkScript.type = 'text/javascript';
-    buildRemarkScript.innerText = 'remark.create();';
+    buildRemarkScript.innerText = 'window.parent.slideshow = remark.create();';
     previewerBody.appendChild(buildRemarkScript);
     
 		// CSS修正
@@ -1187,21 +1187,20 @@
 
 	on("#previewer", "previewed", function(e) {
 		if (isEditMode()) {
-			var headings = e.target.querySelectorAll("h1, h2, h3, h4, h5, h6");
+			var headings = document.getElementById("previewer").contentDocument.body.querySelectorAll("h1, h2, h3, h4, h5, h6");
 			for (var i = 0; i < headings.length; i++) {
 				// 見出しにイベントを設定する。メモリリーク対策でプレビュー時に
 				// イベントを外しやすくするために、on**で実装する。 
-				headings[i].onmouseover = function(){
+				headings[i].onmouseover = function() {
 					this.style.cursor = "pointer";
-				}
+				};
 				headings[i].onclick = headingSyncToEditor;
 			}
 		}
 	});
 	
 	on("#previewer", "prepreview", function(e) {
-		var headings = document.getElementById("previewer")
-				.querySelectorAll("h1, h2, h3, h4, h5, h6");
+		var headings = document.getElementById("previewer").contentDocument.body.querySelectorAll("h1, h2, h3, h4, h5, h6");
 		for (var i = 0; i < headings.length; i++) {
 			headings[i].onmouseover = null;
 			headings[i].onclick = null;
@@ -1210,15 +1209,15 @@
 
 	function headingSyncToPreviewer() {
 		var editor = document.getElementById("editor");
-		var previewer = document.getElementById("previewer");
+		var previewer = document.getElementById("previewer").contentDocument.body;
 		
 		var num = getCurrentNumberOfHeading(editor);
-		scrollPreviewerToHeading(previewer, num);
+		gotoPreviewerToHeadingPage(previewer, num);
 	}
 
 	function headingSyncToEditor(e) {
 		var editor = document.getElementById("editor");
-		var previewer = document.getElementById("previewer");
+		var previewer = document.getElementById("previewer").contentDocument.body;
 		var num = getNumberOfHeading(previewer, e.target);
 		scrollEditorToHeading(editor, num);
 	}
@@ -1304,13 +1303,16 @@
 		return processed.join().split("# ").length - 1;
 	}
 
-	function scrollPreviewerToHeading(previewer, numberOfHeading) {
+	function gotoPreviewerToHeadingPage(previewer, numberOfHeading) {
 		if (numberOfHeading == 0) {
-			previewer.scrollTop = 0;
+      slideshow.gotoFirstSlide();
 		} else {
 			var hElems = previewer.querySelectorAll("h1, h2, h3, h4, h5, h6");
 			var elem = hElems[numberOfHeading - 1];
-			previewer.scrollTop = elem.offsetTop - previewer.offsetTop;
+      var slideNumberDiv = elem.parentNode.querySelector('.remark-slide-number');
+      var slideNumber = slideNumberDiv.innerText.split('/')[0].trim() - 0; // ページ番号 (1 / 5) の前の部分だけ抽出してる
+      
+      slideshow.gotoSlide(slideNumber);
 		}
 	}
 
