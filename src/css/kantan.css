@@ -49,7 +49,7 @@ nav:after {
 #attach #filer{
 	box-sizing:border-box;
 	width:100%;
-	height:150px;
+	height:150px; 
 	overflow: auto;
 	display:none;
 }
@@ -71,7 +71,7 @@ nav:after {
 }
 
 #wrapper {
-	overflow: auto;
+	overflow: hidden;
 }
 
 #wrapper #editorTabWrapper {

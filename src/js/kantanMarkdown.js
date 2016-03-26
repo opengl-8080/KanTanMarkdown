@@ -188,7 +188,7 @@
 	function doLayout() {
 		var wrapper = document.getElementById("wrapper");
 		
-		var wrapperHeight = window.innerHeight - wrapper.offsetTop - 10;
+		var wrapperHeight = window.innerHeight - wrapper.offsetTop;
 		wrapper.style.height = wrapperHeight + "px";
 	}
 
