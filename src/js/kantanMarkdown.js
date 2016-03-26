@@ -1527,7 +1527,6 @@
   on(document.getElementById('previewer').contentDocument.body, 'keydown', shortcutKey);
   
   function shortcutKey(event) {
-    console.log(event);
 		var code = (event.keyCode ? event.keyCode : event.which);
 		
 		if (isDrawMode()) {

@@ -425,6 +425,10 @@ nav:after {
  * また、CSSの変更はプレビューしないと反映しません。
  */
 
+@import url(http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+@import url(http://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+@import url(http://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
 body { font-family: 'Droid Serif'; }
 h1, h2, h3 {
   font-family: 'Yanone Kaffeesatz';
@@ -3589,14 +3593,9 @@ LetterModeStrategy.prototype = {
 	
 	/* ショートカットキー */
 	on("body", "keydown", shortcutKey);
-  
-    on(document.getElementById('previewer').contentDocument.body, 'keydown', shortcutKey);
-    
-  // document.getElementById('previewer').contentDocument.body.addEventListener('load', function() {
-  // });
+  on(document.getElementById('previewer').contentDocument.body, 'keydown', shortcutKey);
   
   function shortcutKey(event) {
-    console.log(event);
 		var code = (event.keyCode ? event.keyCode : event.which);
 		
 		if (isDrawMode()) {
