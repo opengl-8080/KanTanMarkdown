@@ -370,7 +370,7 @@
 		}
 		
 		// 画像埋め込み
-		var images = document.querySelectorAll("#previewer img");
+		var images = preBody.querySelectorAll("img");
 		for (var i = 0; i < images.length; i++) {
 			var elem = images[i];
 			loadImage(elem);
