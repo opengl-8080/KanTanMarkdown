@@ -10,9 +10,20 @@
     })();
   
     (function() {
+      // Remark プレビュー領域の初期化
+      var previewerHead = document.getElementById("previewer").contentDocument.head;
+      
       // Remark 用の style 領域
-		  var previewer = document.getElementById("previewer");
-      previewer.contentDocument.head.innerHTML = '<style id="remarkStyle" type="text/css"></stype>';
+      var remarkStyle = document.createElement('style');
+      remarkStyle.id = 'remarkStyle';
+      remarkStyle.type = 'text/css';
+      previewerHead.appendChild(remarkStyle);
+      
+      // Remark のソースをプレビュー領域にコピー
+      var remarkScript = document.createElement('script');
+      remarkScript.type = 'text/javascript';
+      remarkScript.innerHTML = document.getElementById('remarkJs').innerHTML;
+      previewerHead.appendChild(remarkScript);
     })();
     
 	/* 編集不可ブラウザ判定 */
@@ -322,37 +333,27 @@
 		// スクロールバー下端判定
 		var scrollLockFlag = isMaxScroll("previewer");
 		
-		// マークダウンレンダリング
+		// Remark レンダリング
     var preBody = previewer.contentDocument.body;
     
+    // 現在表示されている Remark のスライドを全て除去
     while (preBody.firstChild) {
       preBody.removeChild(preBody.firstChild);
     }
     previewer.contentDocument.documentElement.className = '';
     preBody.className = '';
     
-    (function() {
-      var previewer = document.getElementById('previewer');
-      
-      var textArea = document.createElement('textarea');
-      textArea.innerHTML = editor.value;
-      textArea.id = 'source';
-      previewer.contentDocument.body.appendChild(textArea);
-      
-      var remarkScript = document.createElement('script');
-      remarkScript.src = 'http://gnab.github.io/remark/downloads/remark-latest.min.js';
-      
-      remarkScript.onload = function() {
-        var buildRemarkScript = document.createElement('script');
-        buildRemarkScript.type = 'text/javascript';
-        buildRemarkScript.innerText = 'remark.create();';
-        previewer.contentDocument.body.appendChild(buildRemarkScript);
-      };
-      
-      previewer.contentDocument.body.appendChild(remarkScript);
-    })();
+    // あらためて Remark 用の textarea と script を追加する
+    var textArea = document.createElement('textarea');
+    textArea.innerHTML = editor.value;
+    textArea.id = 'source';
+    preBody.appendChild(textArea);
     
-		
+    var buildRemarkScript = document.createElement('script');
+    buildRemarkScript.type = 'text/javascript';
+    buildRemarkScript.innerText = 'remark.create();';
+    preBody.appendChild(buildRemarkScript);
+    
 		// CSS修正
 		var cssEditor = document.querySelector("#cssEditor");
     previewer.contentDocument.querySelector('#remarkStyle').innerHTML = cssEditor.value;
