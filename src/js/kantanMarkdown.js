@@ -306,7 +306,9 @@
     
     var buildRemarkScript = document.createElement('script');
     buildRemarkScript.type = 'text/javascript';
-    buildRemarkScript.innerText = 'window.parent.slideshow = remark.create();';
+    buildRemarkScript.innerText = 'window.parent.slideshow = remark.create({'
+                                + '  highlightLines: true'
+                                + '});';
     previewerBody.appendChild(buildRemarkScript);
     
 		// CSS修正
