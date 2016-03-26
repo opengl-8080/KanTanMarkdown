@@ -42,16 +42,13 @@ kantanUpdate({
 " * また、CSSの変更はプレビューしないと反映しません。\n" + 
 " */\n" + 
 "\n" + 
-"@import url(http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);\n" + 
-"@import url(http://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);\n" + 
 "@import url(http://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);\n" + 
 "\n" + 
-"body { font-family: 'Droid Serif'; }\n" + 
-"h1, h2, h3 {\n" + 
-"  font-family: 'Yanone Kaffeesatz';\n" + 
-"  font-weight: normal;\n" + 
-"}\n" + 
 ".remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }\n" + 
+"\n" + 
+"body {\n" + 
+"  font-family: 'Hiragino Kaku Gothic Pro', 'ヒラギノ角ゴ Pro W3', Meiryo, メイリオ, Osaka, 'MS PGothic', arial, helvetica, sans-serif;\n" + 
+"}\n" + 
 "\n" + 
 ".previewMode #previewer {\n" + 
 "    width: 100%;\n" + 
