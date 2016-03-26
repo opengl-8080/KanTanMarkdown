@@ -129,15 +129,6 @@
 	/* エディタに機能追加 */
 	toKantanEditor(document.getElementById("editor"));
 	toKantanEditor(document.getElementById("cssEditor"));
-
-	/* シンタックスハイライト設定 */
-	if (typeof hljs !== "undefined") {
-		marked.setOptions({
-			highlight: function (code, lang) {
-				return hljs.highlightAuto(code, [lang]).value;
-			}
-		});
-	}
 	
 	/* 画像キャッシュ */
 	var imageUrlMap = {};

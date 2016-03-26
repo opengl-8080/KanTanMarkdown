@@ -26,12 +26,6 @@ module.exports = function(grunt) {
 					dest: "dist/ktm-dev.html"
 				}]
 			},
-			afterBuild_lite:{
-				files: [{
-					src: ["dist/temp/src/ktm.html"],
-					dest: "dist/ktm-lite.html"
-				}]
-			},
 			afterBuild_std:{
 				files: [{
 					src: ["dist/temp/src/ktm.html"],
@@ -83,20 +77,6 @@ module.exports = function(grunt) {
 			},
 		},
 		replace: {
-			removeHighlightCss: {
-				src: ["dist/temp/src/css/hljs.css"],
-				overwrite: true,
-				replacements: [
-					{from: /[\s|\S]*/g, to: ""},
-				],
-			},
-			removeHighlightJs: {
-				src: ['dist/temp/src/ktm.html'],
-				overwrite: true,
-				replacements: [
-					{from: /\s<script id="highlightJs"[\s|\S]+?<\/script>/g, to: ""},
-				],
-			},
 			removeRaphaelJs: {
 				src: ['dist/temp/src/ktm.html'],
 				overwrite: true,
@@ -130,13 +110,6 @@ module.exports = function(grunt) {
 				overwrite: true,
 				replacements: [
 					{from: /__KANTAN_EDITION__/g, to: "dev"},
-				],
-			},
-			replaceKantanEdition_lite:{
-				src: ['dist/temp/src/ktm.html'],
-				overwrite: true,
-				replacements: [
-					{from: /__KANTAN_EDITION__/g, to: "lite"},
 				],
 			},
 			replaceKantanEdition_std:{
@@ -184,21 +157,6 @@ module.exports = function(grunt) {
 		"replace:replaceKantanEdition_dev",
 		"copy:afterBuild_dev",
 	]);
-	grunt.registerTask("build-lite", [
-		"clean:temp",
-		"copy:beforeBuild",
-		"cssmin:css",
-		"uglify:js",
-		"replace:removeHighlightCss",
-		"replace:removeHighlightJs",
-		"replace:removeRaphaelJs",
-		"replace:removeUnderscoreJs",
-		"replace:removeJsSequenceDiagramsJs",
-		"replace:removeFlowChartJs",
-		"inline:makeKtmHtml",
-		"replace:replaceKantanEdition_lite",
-		"copy:afterBuild_lite",
-	]);
 	grunt.registerTask("build-std", [
 		"clean:temp",
 		"copy:beforeBuild",
@@ -233,7 +191,6 @@ module.exports = function(grunt) {
 	]);
 	grunt.registerTask("build", [
 		"build-dev",
-		"build-lite",
 		"build-std",
 		"build-full",
 		"build-updateJs",
