@@ -334,32 +334,32 @@
 		var scrollLockFlag = isMaxScroll("previewer");
 		
 		// Remark レンダリング
-    var preBody = previewer.contentDocument.body;
+    var previewerBody = previewer.contentDocument.body;
     
     // 現在表示されている Remark のスライドを全て除去
-    while (preBody.firstChild) {
-      preBody.removeChild(preBody.firstChild);
+    while (previewerBody.firstChild) {
+      previewerBody.removeChild(previewerBody.firstChild);
     }
     previewer.contentDocument.documentElement.className = '';
-    preBody.className = '';
+    previewerBody.className = '';
     
     // あらためて Remark 用の textarea と script を追加する
     var textArea = document.createElement('textarea');
     textArea.innerHTML = editor.value;
     textArea.id = 'source';
-    preBody.appendChild(textArea);
+    previewerBody.appendChild(textArea);
     
     var buildRemarkScript = document.createElement('script');
     buildRemarkScript.type = 'text/javascript';
     buildRemarkScript.innerText = 'remark.create();';
-    preBody.appendChild(buildRemarkScript);
+    previewerBody.appendChild(buildRemarkScript);
     
 		// CSS修正
 		var cssEditor = document.querySelector("#cssEditor");
     previewer.contentDocument.querySelector('#remarkStyle').innerHTML = cssEditor.value;
     
 		// タイトル変更
-		var h1 = preBody.querySelector("h1");
+		var h1 = previewerBody.querySelector("h1");
 		if(h1) {
 			document.title = h1.textContent;
 		} else {
@@ -370,14 +370,14 @@
 		}
 		
 		// 画像埋め込み
-		var images = preBody.querySelectorAll("img");
+		var images = previewerBody.querySelectorAll("img");
 		for (var i = 0; i < images.length; i++) {
 			var elem = images[i];
 			loadImage(elem);
 		}
 		
 		// リンク
-		var anchors = preBody.querySelectorAll("a");
+		var anchors = previewerBody.querySelectorAll("a");
 		for(i in anchors) {
 			var anchor = anchors[i];
 			var href = anchor.href;
@@ -398,7 +398,7 @@
 		
 		// シーケンス図
 		if (typeof Diagram !== "undefined") {
-			var sequences = document.getElementsByClassName("sequence");
+			var sequences = previewerBody.getElementsByClassName("sequence");
 			for (var i = 0; i < sequences.length; i++) {
 				var sequence = sequences[i];
 				var diagram = Diagram.parse(sequence.textContent);
