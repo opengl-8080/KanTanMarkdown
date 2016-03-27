@@ -325,7 +325,7 @@
     
 		// タイトル変更
 		var h1 = previewerBody.querySelector("h1");
-		if(h1) {
+		if(h1 && h1.textContent !== 'Help') { // remark が Help というタイトルを作ってしまうので、それを回避
 			document.title = h1.textContent;
 		} else {
 			document.title = "無題";
