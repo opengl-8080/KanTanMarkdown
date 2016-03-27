@@ -319,6 +319,10 @@
     event.initEvent("prepreview", true, true);
     newPreviewer.dispatchEvent(event);
     
+    // CSS修正
+    var cssEditor = document.querySelector("#cssEditor");
+    previewerDocument.querySelector('#remarkStyle').innerHTML = cssEditor.value;
+    
 		// タイトル変更
 		var h1 = previewerBody.querySelector("h1");
 		if(h1) {
