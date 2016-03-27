@@ -275,36 +275,41 @@
     newPreviewer.id = 'previewer';
     wrapper.appendChild(newPreviewer);
     
+    var previewerDocument = newPreviewer.contentDocument;
+    previewerDocument.open();
+    previewerDocument.write('<head></head><body></body>'); // firefox ではこうしないと body を書き出せない
+    previewerDocument.close(); // firefox では close しないと動かない
+    
     // <head> の初期化
-    var previewerHead = newPreviewer.contentDocument.head;
+    var previewerHead = previewerDocument.head;
     
     // style タグ追加
-    var remarkStyle = document.createElement('style');
+    var remarkStyle = previewerDocument.createElement('style');
     remarkStyle.id = 'remarkStyle';
     remarkStyle.type = 'text/css';
     previewerHead.appendChild(remarkStyle);
     
     // Remark のソースをプレビュー領域にコピー
-    var remarkScript = document.createElement('script');
+    var remarkScript = previewerDocument.createElement('script');
     remarkScript.type = 'text/javascript';
     remarkScript.innerHTML = document.getElementById('remarkJs').innerHTML;
     previewerHead.appendChild(remarkScript);
 		
 		// <body> の初期化
-    var previewerBody = document.createElement('body');
+    var previewerBody = previewerDocument.body;
     // ショートカットキー設定
     on(previewerBody, 'keydown', shortcutKey);
     
     // textarea 追加
-    var textArea = document.createElement('textarea');
+    var textArea = previewerDocument.createElement('textarea');
     textArea.innerHTML = editor.value;
     textArea.id = 'source';
     previewerBody.appendChild(textArea);
     
     // script 追加
-    var buildRemarkScript = document.createElement('script');
+    var buildRemarkScript = previewerDocument.createElement('script');
     buildRemarkScript.type = 'text/javascript';
-    buildRemarkScript.innerText = 'window.parent.slideshow = remark.create({'
+    buildRemarkScript.innerHTML = 'window.parent.slideshow = remark.create({'
                                 + '  highlightLines: true'
                                 + '});';
     previewerBody.appendChild(buildRemarkScript);
@@ -378,8 +383,6 @@
 		var event = document.createEvent("Event");
 		event.initEvent("previewed", true, true);
 		newPreviewer.dispatchEvent(event);
-    
-    newPreviewer.contentDocument.body = previewerBody;
 	}
 	
 	function loadImage(elem) {
