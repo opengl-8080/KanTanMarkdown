@@ -266,6 +266,11 @@
   
 	// 同期実行
 	function doPreview() {
+    // 現在の表示ページを保存
+    if (window.slideshow) {
+      var pageNumber = slideshow.getCurrentSlideIndex() + 1;
+    }
+    
     // プレビュー用の iframe を再作成（イベントリスナーの登録しすぎでメモリリークの警告が出るため）
     var wrapper = document.getElementById('wrapper');
 		var oldPreviewer = document.getElementById("previewer");
@@ -387,6 +392,11 @@
 		var event = document.createEvent("Event");
 		event.initEvent("previewed", true, true);
 		newPreviewer.dispatchEvent(event);
+    
+    // 再作成すると先頭ページに戻されるので、再作成前のページを表示させる
+    if (typeof pageNumber !== 'undefined' && window.slideshow) {
+      slideshow.gotoSlide(pageNumber);
+    }
 	}
 	
 	function loadImage(elem) {

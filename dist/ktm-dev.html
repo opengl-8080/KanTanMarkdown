@@ -2233,6 +2233,12 @@ LetterModeStrategy.prototype = {
   
 	// 同期実行
 	function doPreview() {
+    // 現在の表示ページを保存
+    if (window.slideshow) {
+      var pageNumber = slideshow.getCurrentSlideIndex() + 1;
+      console.log('before:' + pageNumber);
+    }
+    
     // プレビュー用の iframe を再作成（イベントリスナーの登録しすぎでメモリリークの警告が出るため）
     var wrapper = document.getElementById('wrapper');
 		var oldPreviewer = document.getElementById("previewer");
@@ -2354,6 +2360,12 @@ LetterModeStrategy.prototype = {
 		var event = document.createEvent("Event");
 		event.initEvent("previewed", true, true);
 		newPreviewer.dispatchEvent(event);
+    
+    // 再作成で先頭ページに戻されるので、ページ同期を実行する
+    if (typeof pageNumber !== 'undefined' && window.slideshow) {
+      console.log('sync:' + pageNumber);
+      slideshow.gotoSlide(pageNumber);
+    }
 	}
 	
 	function loadImage(elem) {
