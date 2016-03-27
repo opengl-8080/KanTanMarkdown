@@ -842,8 +842,7 @@ pre tt {
 			<li><a href="#" id="cssTab">CSS</a></li>
 		</ol>
 	</div>
-	<iframe id="previewer" tabIndex="-1">
-  </iframe>
+	<iframe id="previewer" tabIndex="-1"></iframe>
 </div>
 <div id="onlineMenu" class="popupMenu">
 	<ul>
@@ -1977,22 +1976,22 @@ LetterModeStrategy.prototype = {
         }
     })();
   
-    (function() {
-      // Remark プレビュー領域の初期化
-      var previewerHead = document.getElementById("previewer").contentDocument.head;
+    // (function() {
+    //   // Remark プレビュー領域の初期化
+    //   var previewerHead = document.getElementById("previewer").contentDocument.head;
       
-      // Remark 用の style 領域
-      var remarkStyle = document.createElement('style');
-      remarkStyle.id = 'remarkStyle';
-      remarkStyle.type = 'text/css';
-      previewerHead.appendChild(remarkStyle);
+    //   // Remark 用の style 領域
+    //   var remarkStyle = document.createElement('style');
+    //   remarkStyle.id = 'remarkStyle';
+    //   remarkStyle.type = 'text/css';
+    //   previewerHead.appendChild(remarkStyle);
       
-      // Remark のソースをプレビュー領域にコピー
-      var remarkScript = document.createElement('script');
-      remarkScript.type = 'text/javascript';
-      remarkScript.innerHTML = document.getElementById('remarkJs').innerHTML;
-      previewerHead.appendChild(remarkScript);
-    })();
+    //   // Remark のソースをプレビュー領域にコピー
+    //   var remarkScript = document.createElement('script');
+    //   remarkScript.type = 'text/javascript';
+    //   remarkScript.innerHTML = document.getElementById('remarkJs').innerHTML;
+    //   previewerHead.appendChild(remarkScript);
+    // })();
     
 	/* 編集不可ブラウザ判定 */
 
@@ -2250,38 +2249,53 @@ LetterModeStrategy.prototype = {
   
 	// 同期実行
 	function doPreview() {
-		// prepreviewedイベントをディスパッチ
-		var previewer = document.getElementById("previewer");
-		var event = document.createEvent("Event");
-		event.initEvent("prepreview", true, true);
-		previewer.dispatchEvent(event);
+    // プレビュー用の iframe を再作成（イベントリスナーの登録しすぎでメモリリークの警告が出るため）
+    var wrapper = document.getElementById('wrapper');
+		var oldPreviewer = document.getElementById("previewer");
+    wrapper.removeChild(oldPreviewer);
+    
+    var newPreviewer = document.createElement('iframe');
+    newPreviewer.id = 'previewer';
+    wrapper.appendChild(newPreviewer);
+    
+    // <head> の初期化
+    var previewerHead = newPreviewer.contentDocument.head;
+    
+    // style タグ追加
+    var remarkStyle = document.createElement('style');
+    remarkStyle.id = 'remarkStyle';
+    remarkStyle.type = 'text/css';
+    previewerHead.appendChild(remarkStyle);
+    
+    // Remark のソースをプレビュー領域にコピー
+    var remarkScript = document.createElement('script');
+    remarkScript.type = 'text/javascript';
+    remarkScript.innerHTML = document.getElementById('remarkJs').innerHTML;
+    previewerHead.appendChild(remarkScript);
 		
-		// Remark レンダリング
-    var previewerBody = previewer.contentDocument.body;
+		// <body> の初期化
+    var previewerBody = document.createElement('body');
+    // ショートカットキー設定
+    on(previewerBody, 'keydown', shortcutKey);
     
-    // 現在表示されている Remark のスライドを全て除去
-    while (previewerBody.firstChild) {
-      previewerBody.removeChild(previewerBody.firstChild);
-    }
-    previewer.contentDocument.documentElement.className = '';
-    previewerBody.className = '';
-    
-    // あらためて Remark 用の textarea と script を追加する
+    // textarea 追加
     var textArea = document.createElement('textarea');
     textArea.innerHTML = editor.value;
     textArea.id = 'source';
     previewerBody.appendChild(textArea);
     
+    // script 追加
     var buildRemarkScript = document.createElement('script');
     buildRemarkScript.type = 'text/javascript';
     buildRemarkScript.innerText = 'window.parent.slideshow = remark.create({'
                                 + '  highlightLines: true'
                                 + '});';
     previewerBody.appendChild(buildRemarkScript);
-    
-		// CSS修正
-		var cssEditor = document.querySelector("#cssEditor");
-    previewer.contentDocument.querySelector('#remarkStyle').innerHTML = cssEditor.value;
+  
+		// prepreviewedイベントをディスパッチ
+    var event = document.createEvent("Event");
+    event.initEvent("prepreview", true, true);
+    newPreviewer.dispatchEvent(event);
     
 		// タイトル変更
 		var h1 = previewerBody.querySelector("h1");
@@ -2346,7 +2360,9 @@ LetterModeStrategy.prototype = {
 		// previewedイベントをディスパッチ
 		var event = document.createEvent("Event");
 		event.initEvent("previewed", true, true);
-		previewer.dispatchEvent(event);
+		newPreviewer.dispatchEvent(event);
+    
+    // newPreviewer.contentDocument.body = previewerBody;
 	}
 	
 	function loadImage(elem) {
